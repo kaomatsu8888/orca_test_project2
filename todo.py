@@ -159,6 +159,24 @@ def _done(args):
     return _error("todo #{} not found".format(args.id))
 
 
+def _rm(args):
+    try:
+        data = load_todos()
+    except ValueError as exc:
+        return _error(str(exc))
+
+    for index, item in enumerate(data["items"]):
+        if item["id"] == args.id:
+            removed = data["items"].pop(index)
+            try:
+                save_todos(data)
+            except OSError as exc:
+                return _error("could not save todo file: {}".format(exc))
+            print("Removed #{}: {}".format(args.id, removed["title"]))
+            return 0
+    return _error("todo #{} not found".format(args.id))
+
+
 def build_parser():
     parser = argparse.ArgumentParser(prog="todo")
     subparsers = parser.add_subparsers(dest="command", required=True)
@@ -174,6 +192,10 @@ def build_parser():
     done_parser = subparsers.add_parser("done")
     done_parser.add_argument("id", type=int)
     done_parser.set_defaults(function=_done)
+
+    rm_parser = subparsers.add_parser("rm")
+    rm_parser.add_argument("id", type=int)
+    rm_parser.set_defaults(function=_rm)
     return parser
 
 
