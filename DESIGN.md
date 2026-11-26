@@ -16,7 +16,7 @@ tests/test_todo.py  # unittest によるテスト
   {"id": 1, "title": "牛乳を買う", "done": false, "created_at": "2026-11-26T10:00:00"},
   {"id": 2, "title": "本を返す", "done": true, "created_at": "2026-11-26T11:00:00"}]}
 ```
-- `id` は 1 から始まる連番。削除がないため `next_id` で採番し再利用しない。
+- `id` は 1 から始まる連番で `next_id` により採番する。`rm` で削除しても `next_id` は減らさず、削除済みの id は再利用しない。
 - ファイルが無ければ空データ `{"next_id": 1, "items": []}` として扱う。
 - 保存は一時ファイルに書いてから `os.replace` で置き換える（破損防止）。UTF-8, `ensure_ascii=False`。
 
