@@ -33,3 +33,13 @@ tests/test_todo.py  # unittest によるテスト
 
 ## 実行方法
 `python todo.py add "牛乳を買う"` / `python todo.py list` / `python todo.py done 1`
+
+## rm コマンド追加
+- `todo rm <id>`: 該当項目を `items` から取り除いて保存し `Removed #<id>: <title>` を表示。完了・未完了を問わず削除できる。
+- `id` は `done` と同じく argparse の `type=int` で受け取る。整数として解釈できない値は argparse エラー（終了コード 2）。
+- 削除後も `next_id` は減らさず、削除済みの id は再利用しない（過去の id と別項目の取り違えを防ぐ）。
+- 存在しない id（0・負数を含む）は stderr に `Error: todo #<id> not found` を出して終了コード 1。ファイルは書き換えない。
+- JSON 破損時は他コマンドと同様にファイルを上書きせず終了コード 1。保存失敗（OSError）も終了コード 1。
+- 確認プロンプトは出さない（スクリプトから使えるよう非対話）。複数 id の同時指定は対象外。
+- 保存は既存の `save_todos`（一時ファイル + `os.replace`）を使う。
+- 終了コード: 0 成功 / 1 存在しない id・JSON 破損・保存失敗 / 2 引数誤り。
